@@ -152,6 +152,7 @@ class CBSState:
         Verifies whether a CBS state is a solution. If it isn't, it returns False and a tuple with 
         the conflicting state and time step; returns True, None otherwise. 
         """
+
         for agent in range(self._k):
             agentConst = self._constraints.get(agent)  #Constraint array of an agent
 
@@ -219,8 +220,8 @@ class CBS():
             n = Open.pop()
 
             if n.is_solution():
-                return n.path, n.cost
-            print(n)
+                return n._paths, n._cost
+
             for children in n.successors():
                 children.compute_cost()
                 if children.cost != float('inf'):
