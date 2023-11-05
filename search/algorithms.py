@@ -139,13 +139,13 @@ class CBSState:
         """
         Computes the cost of a CBS state. Assumes the sum of the cost of the paths as the objective function.
         """
-        astar = AStar(map)
+        astar = AStar(self._map)
         for i in range(self._k):
             cost, path = astar.search(self._starts[i], self._goals[i], self._constraints[i])
             self._cost += cost
             self._paths[i] = path
 
-        return cost, path
+        return self._cost, self._paths
 
 
     def is_solution(self):
@@ -199,7 +199,7 @@ class CBS():
         """
         cost, path = start.compute_cost()
         if cost == float('inf'):
-            return 'No Solution' #Todo
+            return None #Todo
 
         Open = []
         Open.append(start)
@@ -208,15 +208,13 @@ class CBS():
 
             if n.is_solution():
                 return n.path, n.cost
-
+            print(n)
             for children in n.successors():
                 children.compute_cost()
                 if children.cost != float('inf'):
                     Open.append(children)
 
 
-        return None, None
-        
 class AStar():
 
     def __init__(self, gridded_map):

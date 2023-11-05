@@ -29,16 +29,17 @@ def main():
     starts = [State(1, 1), State(5, 1)]
     goals = [State(4, 1), State(2, 1)]
     cbs_state = CBSState(gridded_map, starts, goals)
-    cbs_search = CBS()
-
-    paths, cost = cbs_search.search(cbs_state)
-    if paths is not None:
-        print('Solution paths encountered for the easy test: ')
-        for agent, path in paths.items():
-            print(agent, path)
-        print()
-    else:
-        print('none path')
+    print(cbs_state.compute_cost())
+    # cbs_search = CBS()
+    #
+    # paths, cost = cbs_search.search(cbs_state)
+    # if paths is not None:
+    #     print('Solution paths encountered for the easy test: ')
+    #     for agent, path in paths.items():
+    #         print(agent, path)
+    #     print()
+    # else:
+    #     print('none path')
 
     # name_map = "dao-map/combat2.map"
     # test_instances = "test-instances/instances.txt"
@@ -58,7 +59,7 @@ def main():
     #         print()
     #     else:
     #         print('Correctly Solved: ', problem[2], cost)
-    #
+
 
 if __name__ == "__main__":
     main()
