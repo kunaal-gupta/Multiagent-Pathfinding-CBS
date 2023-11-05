@@ -141,8 +141,11 @@ class CBSState:
         """
         astar = AStar(map)
         for i in range(self._k):
-            cost, _ = astar.search(self._starts[i], self._goals[i], self._constraints[i])
+            cost, path = astar.search(self._starts[i], self._goals[i], self._constraints[i])
             self._cost += cost
+            self._paths[i] = path
+
+        return cost, path
 
 
     def is_solution(self):
@@ -150,6 +153,10 @@ class CBSState:
         Verifies whether a CBS state is a solution. If it isn't, it returns False and a tuple with 
         the conflicting state and time step; returns True, None otherwise. 
         """
+        if len(self._constraints) == 0:
+            return True, None
+
+        return False
         pass
 
     def successors(self):
@@ -190,6 +197,24 @@ class CBS():
         """
         Performs CBS search for the problem defined in start.
         """
+        cost, path = start.compute_cost()
+        if cost == float('inf'):
+            return 'No Solution' #Todo
+
+        Open = []
+        Open.append(start)
+        while len(Open) != 0:
+            n = Open.pop()
+
+            if n.is_solution():
+                return n.path, n.cost
+
+            for children in n.successors():
+                children.compute_cost()
+                if children.cost != float('inf'):
+                    Open.append(children)
+
+
         return None, None
         
 class AStar():
