@@ -1,6 +1,7 @@
 import copy
 import heapq
 
+
 class State:
     """
     Class to represent a state on grid-based pathfinding problems. The class contains two static variables:
@@ -13,7 +14,7 @@ class State:
     """
     map_width = 0
     map_height = 0
-    
+
     def __init__(self, x, y):
         """
         Constructor - requires the values of x and y of the state. All the other variables are
@@ -24,7 +25,7 @@ class State:
         self._g = 0
         self._cost = 0
         self._parent = None
-        
+
     def __repr__(self):
         """
         This method is invoked when we call a print instruction with a state. It will print [x, y],
@@ -32,13 +33,13 @@ class State:
         """
         state_str = "[" + str(self._x) + ", " + str(self._y) + "]"
         return state_str
-    
+
     def __lt__(self, other):
         """
         Less-than operator; used to sort the nodes in the OPEN list
         """
         return self._cost < other._cost
-    
+
     def __hash__(self):
         """
         Given a state (x, y), this method returns the value of x * map_width + y. This is a perfect 
@@ -46,7 +47,7 @@ class State:
         is used to implement the CLOSED list of the algorithms. 
         """
         return hash((self._y * State.map_width + self._x, self._g))
-    
+
     def __eq__(self, other):
         """
         Method that is invoked if we use the operator == for states. It returns True if self and other
@@ -62,19 +63,19 @@ class State:
         Returns the x coordinate of the state
         """
         return self._x
-    
+
     def get_y(self):
         """
         Returns the y coordinate of the state
         """
         return self._y
-    
+
     def get_g(self):
         """
         Returns the g-value of the state
         """
         return self._g
-        
+
     def set_g(self, g):
         """
         Sets the g-value of the state
@@ -86,7 +87,7 @@ class State:
         Returns the cost of a state; the cost is determined by the search algorithm
         """
         return self._cost
-    
+
     def set_cost(self, cost):
         """
         Sets the cost of the state; the cost is determined by the search algorithm 
@@ -113,10 +114,10 @@ class State:
         dist_y = abs(self.get_y() - target_state.get_y())
 
         return dist_x + dist_y
-    
+
 
 class CBSState:
-        
+
     def __init__(self, map, starts, goals):
         """
         Constructor of the CBS state. Initializes cost, constraints, maps, start and goal locations, 
@@ -153,29 +154,59 @@ class CBSState:
         the conflicting state and time step; returns True, None otherwise. 
         """
 
-        for agent in range(self._k):
-            agentConst = self._constraints.get(agent)  #Constraint array of an agent
+        # for agent in range(self._k):
+        #     agentConst = self._constraints.get(agent)  #Constraint array of an agent
+        #
+        #     if agentConst is not None:                # If constrain array is not empty
+        #         for state in agentConst:              # Iterating that array by each state
+        #             i = 0
+        #             stateConstArr = agentConst[state]
+        #
+        #             while i < len(stateConstArr):
+        #                 if state.__eq__(self._paths[agent][stateConstArr[i]]):
+        #                     return False, (state, state.get_g())
+        #
+        #                 i += 1
+        #
+        # return True, None
 
-            if agentConst is not None:                # If constrain array is not empty
-                for state in agentConst:              # Iterating that array by each state
-                    i = 0
-                    stateConstArr = agentConst[state]
+        pathArr = self._paths.values()
+        sorted_dict = dict(sorted(self._paths.items(), key=lambda item: len(item[1])))
+        print()
+        # print('hi', self._paths)
+        # print(sorted_dict)
+        first_key, first_value = next(iter(sorted_dict.items()))
 
-                    while i < len(stateConstArr):
-                        if state.__eq__(self._paths[agent][stateConstArr[i]]):
-                            return False, (state, state.get_g())
+        index = 0
 
-                        i += 1
+        def equalityCheck(array):
+            for i in range(len(array)):
+                for j in range(i+1, len(array)):
+                    if array[i] == array[j]:
+                        return True
+            return False
 
-        return True, None
+        while index < len(first_value):
+            nth_elementArr = list()
+            for sublist in pathArr:
+                nth_elementArr.append(sublist[index])
 
+            print('nth_elementArr:', nth_elementArr)
 
+            if equalityCheck(nth_elementArr):
+                return False
 
+            index += 1
+        return True
 
     def successors(self):
         """
         Generates the two children of a CBS state that doesn't represent a solution.
         """
+
+        # Two children of a CBS state
+        child1 = CBSState(self._map, self._starts, self._goals)
+        child2 = CBSState(self._map, self._starts, self._goals)
         pass
 
     def set_constraint(self, conflict_state, conflict_time, agent):
@@ -184,7 +215,7 @@ class CBSState:
         """
         if (conflict_state.get_x(), conflict_state.get_y()) not in self._constraints[agent]:
             self._constraints[agent][(conflict_state.get_x(), conflict_state.get_y())] = set()
-        
+
         self._constraints[agent][(conflict_state.get_x(), conflict_state.get_y())].add(conflict_time)
 
     def __lt__(self, other):
@@ -192,18 +223,19 @@ class CBSState:
         Less-than operator; used to sort the nodes in the OPEN list
         """
         return self._cost < other._cost
-    
+
     def get_cost(self):
         """
         Returns the cost of a state
         """
         return self._cost
-    
+
     def set_cost(self, cost):
         """
         Sets the cost of the state
         """
         self._cost = cost
+
 
 class CBS():
     def search(self, start):
@@ -212,7 +244,7 @@ class CBS():
         """
         cost, path = start.compute_cost()
         if cost == float('inf'):
-            return None #Todo
+            return None  # Todo
 
         Open = []
         Open.append(start)
@@ -237,7 +269,7 @@ class AStar():
         self.map = gridded_map
         self.OPEN = []
         self.CLOSED = {}
-    
+
     def compute_cost(self, state):
         """
         Computes the f-value of nodes in the A* search
@@ -266,10 +298,10 @@ class AStar():
         self.goal = goal
 
         self.compute_cost(self.start)
-        
+
         self.OPEN.clear()
         self.CLOSED.clear()
-        
+
         heapq.heappush(self.OPEN, self.start)
         self.CLOSED[start.__hash__()] = self.start
         while len(self.OPEN) > 0:
@@ -284,7 +316,7 @@ class AStar():
                 hash_value = child.__hash__()
                 self.compute_cost(child)
                 child.set_parent(node)
-                
+
                 if hash_value not in self.CLOSED:
                     heapq.heappush(self.OPEN, child)
                     self.CLOSED[hash_value] = child
@@ -293,4 +325,3 @@ class AStar():
                     heapq.heappush(self.OPEN, child)
                     self.CLOSED[hash_value] = child
         return -1, None
-    
