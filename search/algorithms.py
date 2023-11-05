@@ -181,30 +181,38 @@ class CBSState:
             for i in range(len(array)):
                 for j in range(i+1, len(array)):
                     if array[i] == array[j]:
-                        return True, array[i]
-            return False
+                        return True, array[i], i, j
+            return False, [], -1, -1
 
         while index < len(first_value):
             nth_elementArr = list()
             for sublist in pathArr:
                 nth_elementArr.append(sublist[index])
 
-
-            if equalityCheck(nth_elementArr):
-                return False, (equalityCheck(nth_elementArr)[1], index)
+            conflict, conflict_state, i, j = equalityCheck(nth_elementArr)
+            if conflict:
+                conflict_time = index
+                return False, conflict_state, conflict_time, i, j
 
             index += 1
-        return True
+        return True, None, None, None, None
 
     def successors(self):
         """
         Generates the two children of a CBS state that doesn't represent a solution.
         """
+        conflict, conflict_state, conflict_time, i, j = self.is_solution()
+        # # Two children of a CBS state
+        c1 = CBSState(self._map, self._starts, self._goals)
+        c1._constraints = copy.deepcopy(self._constraints)
+        c1.set_constraint(conflict_state, conflict_time, i)
 
-        # Two children of a CBS state
-        child1 = CBSState(self._map, self._starts, self._goals)
-        child2 = CBSState(self._map, self._starts, self._goals)
-        pass
+        c2 = CBSState(self._map, self._starts, self._goals)
+        c2._constraints = copy.deepcopy(self._constraints)
+        c2.set_constraint(conflict_state, conflict_time, j)
+        print('created two new states')
+
+        return c1, c2
 
     def set_constraint(self, conflict_state, conflict_time, agent):
         """
@@ -248,12 +256,13 @@ class CBS():
         while len(Open) != 0:
             n = Open.pop()
 
-            if n.is_solution():
+            is_solution = n.is_solution()[0]
+            if is_solution:
                 return n._paths, n._cost
 
             for children in n.successors():
                 children.compute_cost()
-                if children.cost != float('inf'):
+                if children._cost != float('inf'):
                     Open.append(children)
 
 
