@@ -147,17 +147,29 @@ class CBSState:
 
         return self._cost, self._paths
 
-
     def is_solution(self):
         """
         Verifies whether a CBS state is a solution. If it isn't, it returns False and a tuple with 
         the conflicting state and time step; returns True, None otherwise. 
         """
-        if len(self._constraints) == 0:
-            return True, None
+        for agent in range(self._k):
+            agentConst = self._constraints.get(agent)  #Constraint array of an agent
 
-        return False
-        pass
+            if agentConst is not None:                # If constrain array is not empty
+                for state in agentConst:              # Iterating that array by each state
+                    i = 0
+                    stateConstArr = agentConst[state]
+
+                    while i < len(stateConstArr):
+                        if state.__eq__(self._paths[agent][stateConstArr[i]]):
+                            return False, (state, state.get_g())
+
+                        i += 1
+
+        return True, None
+
+
+
 
     def successors(self):
         """
