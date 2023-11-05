@@ -173,8 +173,6 @@ class CBSState:
         pathArr = self._paths.values()
         sorted_dict = dict(sorted(self._paths.items(), key=lambda item: len(item[1])))
         print()
-        # print('hi', self._paths)
-        # print(sorted_dict)
         first_key, first_value = next(iter(sorted_dict.items()))
 
         index = 0
@@ -183,7 +181,7 @@ class CBSState:
             for i in range(len(array)):
                 for j in range(i+1, len(array)):
                     if array[i] == array[j]:
-                        return True
+                        return True, array[i]
             return False
 
         while index < len(first_value):
@@ -191,10 +189,9 @@ class CBSState:
             for sublist in pathArr:
                 nth_elementArr.append(sublist[index])
 
-            print('nth_elementArr:', nth_elementArr)
 
             if equalityCheck(nth_elementArr):
-                return False
+                return False, (equalityCheck(nth_elementArr)[1], index)
 
             index += 1
         return True
