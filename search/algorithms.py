@@ -139,7 +139,14 @@ class CBSState:
         """
         Computes the cost of a CBS state. Assumes the sum of the cost of the paths as the objective function.
         """
-        pass
+        astar = AStar(map)
+        cost = 0
+        for i in range(self._k):
+            agentCost, _ = astar.search(self._starts[i], self._goals[i])
+            cost += agentCost
+
+        self.set_cost(cost)
+
     
     def is_solution(self):
         """
