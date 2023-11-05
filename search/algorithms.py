@@ -172,7 +172,6 @@ class CBSState:
 
         pathArr = self._paths.values()
         sorted_dict = dict(sorted(self._paths.items(), key=lambda item: len(item[1])))
-        print()
         first_key, first_value = next(iter(sorted_dict.items()))
 
         index = 0
@@ -202,6 +201,7 @@ class CBSState:
         Generates the two children of a CBS state that doesn't represent a solution.
         """
         conflict, conflict_state, conflict_time, i, j = self.is_solution()
+
         # # Two children of a CBS state
         c1 = CBSState(self._map, self._starts, self._goals)
         c1._constraints = copy.deepcopy(self._constraints)
@@ -210,7 +210,6 @@ class CBSState:
         c2 = CBSState(self._map, self._starts, self._goals)
         c2._constraints = copy.deepcopy(self._constraints)
         c2.set_constraint(conflict_state, conflict_time, j)
-        print('created two new states')
 
         return c1, c2
 
@@ -249,10 +248,11 @@ class CBS():
         """
         cost, path = start.compute_cost()
         if cost == float('inf'):
-            return None  # Todo
+            return None
 
-        Open = []
+        Open = list()
         Open.append(start)
+
         while len(Open) != 0:
             n = Open.pop()
 
