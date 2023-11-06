@@ -251,10 +251,11 @@ class CBS():
             return None
 
         Open = list()
-        Open.append(start)
+        # Open.append(start)
+        heapq.heappush(Open, start)
 
         while len(Open) != 0:
-            n = Open.pop()
+            n = heapq.heappop(Open)
 
             is_solution = n.is_solution()[0]
             if is_solution:
