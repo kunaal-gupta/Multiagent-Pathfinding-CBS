@@ -171,24 +171,26 @@ class CBSState:
         # return True, None
 
         pathArr = self._paths.values()
-        sorted_dict = dict(sorted(self._paths.items(), key=lambda item: len(item[1])))
+        sorted_dict = dict(sorted(self._paths.items(), reverse=True, key=lambda item: len(item[1])))
         first_key, first_value = next(iter(sorted_dict.items()))
 
         index = 0
 
-        def equalityCheck(array):
+        def conflictCheck(array):
+            array.sort()
+            seen = set()
             for i in range(len(array)):
-                for j in range(i+1, len(array)):
-                    if array[i] == array[j]:
-                        return True, array[i], i, j
+                if array[i] in seen:
+                    return True, array[i], i-1, i
             return False, [], -1, -1
 
         while index < len(first_value):
             nth_elementArr = list()
             for sublist in pathArr:
-                nth_elementArr.append(sublist[index])
+                if len(sublist) - 1 >= index:
+                    nth_elementArr.append(sublist[index])
 
-            conflict, conflict_state, i, j = equalityCheck(nth_elementArr)
+            conflict, conflict_state, i, j = conflictCheck(nth_elementArr)
             if conflict:
                 conflict_time = index
                 return False, conflict_state, conflict_time, i, j
