@@ -38,11 +38,11 @@ def main():
             print(agent, path)
         print()
     #
-    name_map = "dao-map/combat2.map"
-    test_instances = "test-instances/instances.txt"
+    # name_map = "dao-map/combat2.map"
+    # test_instances = "test-instances/instances.txt"
 
-    # name_map = "dao-map/den009d.map"
-    # test_instances = "test-instances/test_problems_den009d.txt"
+    name_map = "dao-map/den009d.map"
+    test_instances = "test-instances/test_problems_den009d.txt"
 
     problems = read_instances(test_instances)
     gridded_map = Map(name_map)

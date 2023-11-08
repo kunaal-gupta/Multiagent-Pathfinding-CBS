@@ -1,7 +1,7 @@
-d = [1,2,3,4]
-j = []
 for i in range(10):
-    try:
-        print(d[i])
-    except IndexError:
-        print('wrong index')
+    for j in range(5):
+        print(i, j)
+        if j == 3:
+            print('breaking')
+            break
+    break
