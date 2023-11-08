@@ -188,17 +188,17 @@ class CBSState:
 
         conflict, conflict_state, conflict_time, agent1, agent2 = True, None, None, None, None
         while index < len(first_value):
-            nth_elementArr = list()
+            nth_elementHash = dict()
 
             for i in range(len(pathArr)):
                 sublist = pathArr[i]
 
                 if len(sublist) - 1 >= index:
-                    if sublist[index] in nth_elementArr:
-                        conflict_time, conflict_state, agent1, agent2 = index, sublist[index], i-1, i
+                    if sublist[index] in nth_elementHash:
+                        conflict_time, conflict_state, agent1, agent2 = index, sublist[index], i, nth_elementHash[sublist[index]]
                         return False, conflict_state, conflict_time, agent1, agent2
 
-                    nth_elementArr.append(sublist[index])
+                    nth_elementHash[sublist[index]] = i
 
             index += 1
         return conflict, conflict_state, conflict_time, agent1, agent2
