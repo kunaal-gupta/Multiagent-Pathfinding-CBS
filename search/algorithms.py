@@ -153,23 +153,24 @@ class CBSState:
         Verifies whether a CBS state is a solution. If it isn't, it returns False and a tuple with
         the conflicting state and time step; returns True, None otherwise.
         """
-
+        # Fetching the length of longest path in ._path, for while loop condition
         sorted_dict = dict(sorted(self._paths.items(), reverse=True, key=lambda item: len(item[1])))
         key, value = next(iter(sorted_dict.items()))
 
+        # Initializing the variables
         conflict, conflict_state, conflict_time, agent1, agent2 = True, None, None, None, None
 
         index = 0
         while index < len(value):
-            nth_StateHash = dict()
+            nth_StateHash = dict()                      # Hashmap to compare ith state of each agent
 
             for agentId in self._paths:
-                agentPathArr = self._paths[agentId]
+                agentPathArr = self._paths[agentId]     # Storing agent path using agentId from ._path
 
                 if index < len(agentPathArr):
-                    agentState = agentPathArr[index]
+                    agentState = agentPathArr[index]     # Fetching ith state from agent's path
 
-                    if agentState in nth_StateHash:
+                    if agentState in nth_StateHash:         # If any of agent has same i-th state
                         conflict_time, conflict_state, agent1, agent2 = index, agentState, agentId, nth_StateHash[agentState]
                         return False, conflict_state, conflict_time, agent1, agent2
 
@@ -185,7 +186,7 @@ class CBSState:
         """
         conflict, conflict_state, conflict_time, i, j = self.is_solution()
 
-        # # Two children of a CBS state
+        # Initializing two children of a CBS state
         c1 = CBSState(self._map, self._starts, self._goals)
         c1._constraints = copy.deepcopy(self._constraints)
         c1.set_constraint(conflict_state, conflict_time, i)
@@ -233,19 +234,19 @@ class CBS():
         if cost == float('inf'):
             return None
 
-        Open = list()
-        heapq.heappush(Open, start)
-        while len(Open) != 0:
+        OpenArr = list()
+        heapq.heappush(OpenArr, start)
+        while len(OpenArr) != 0:
 
-            n = heapq.heappop(Open)
+            n = heapq.heappop(OpenArr)
             if n.is_solution()[0]:
                 return n._paths, n._cost
 
             for children in n.successors():
                 children.compute_cost()
                 if children._cost != float('inf'):
-                    heapq.heappush(Open, children)
-                    heapq.heapify(Open)
+                    heapq.heappush(OpenArr, children)
+                    heapq.heapify(OpenArr)
 
 class AStar():
 
