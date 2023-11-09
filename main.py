@@ -38,9 +38,25 @@ def main():
             print(agent, path)
         print()
 
-    # name_map = "dao-map/combat2.map"
-    # test_instances = "test-instances/instances.txt"
-    # #
+    name_map = "dao-map/combat2.map"
+    test_instances = "test-instances/instances.txt"
+    #
+    problems = read_instances(test_instances)
+    gridded_map = Map(name_map)
+    for problem in problems:
+        cbs_state = CBSState(gridded_map, problem[0], problem[1])
+        cbs_search = CBS()
+        _, cost = cbs_search.search(cbs_state)
+
+        if cost != problem[2]:
+            print('There was a mismatch for problem: ')
+            print(problem)
+            print('Expected: ', problem[2])
+            print('Obtained: ', cost)
+            print()
+        else:
+            print('Correctly Solved: ', problem[2], cost)
+
     name_map = "dao-map/den009d.map"
     test_instances = "test-instances/test_problems_den009d.txt"
 

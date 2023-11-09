@@ -150,66 +150,33 @@ class CBSState:
 
     def is_solution(self):
         """
-        Verifies whether a CBS state is a solution. If it isn't, it returns False and a tuple with 
-        the conflicting state and time step; returns True, None otherwise. 
+        Verifies whether a CBS state is a solution. If it isn't, it returns False and a tuple with
+        the conflicting state and time step; returns True, None otherwise.
         """
 
-        # for agent in range(self._k):
-        #     agentConst = self._constraints.get(agent)  #Constraint array of an agent
-        #
-        #     if agentConst is not None:                # If constrain array is not empty
-        #         for state in agentConst:              # Iterating that array by each state
-        #             i = 0
-        #             stateConstArr = agentConst[state]
-        #
-        #             while i < len(stateConstArr):
-        #                 if state.__eq__(self._paths[agent][stateConstArr[i]]):
-        #                     return False, (state, state.get_g())
-        #
-        #                 i += 1
-        #
-        # return True, None
-
-        # pathArr = list(self._paths.values())
         sorted_dict = dict(sorted(self._paths.items(), reverse=True, key=lambda item: len(item[1])))
-        first_key, first_value = next(iter(sorted_dict.items()))
-
-        index = 0
-        #
-        # def conflictCheck(array):
-        #
-        #     array.sort()
-        #     seen = set()
-        #     for i in range(len(array)):
-        #         if array[i] in seen:
-        #             return True, array[i], i-1, i
-        #         seen.add(array[i])
-        #     return False, [], -1, -1
+        key, value = next(iter(sorted_dict.items()))
 
         conflict, conflict_state, conflict_time, agent1, agent2 = True, None, None, None, None
-        while index < len(first_value):
-            nth_elementHash = dict()
+
+        index = 0
+        while index < len(value):
+            nth_StateHash = dict()
 
             for agentId in self._paths:
                 agentPathArr = self._paths[agentId]
 
-                if len(agentPathArr) > index:
+                if index < len(agentPathArr):
                     agentState = agentPathArr[index]
 
-                    if agentState in nth_elementHash:
-                        conflict_time, conflict_state, agent1, agent2 = index, agentState, agentId, nth_elementHash[agentState]
+                    if agentState in nth_StateHash:
+                        conflict_time, conflict_state, agent1, agent2 = index, agentState, agentId, nth_StateHash[agentState]
                         return False, conflict_state, conflict_time, agent1, agent2
 
-                    # if agentId in self._constraints:
-                    #     if (agentState.get_x(), agentState.get_y())  in self._constraints[agentId]:
-                    #         if index - 1 in self._constraints[agentId][(agentState.get_x(), agentState.get_y())]:
-                    #         # return False, agentState, index, None, None
-                    #         # continue
-                    #             print(False)
-
-                    nth_elementHash[agentPathArr[index]] = agentId
+                    nth_StateHash[agentPathArr[index]] = agentId
 
             index += 1
+
         return conflict, conflict_state, conflict_time, agent1, agent2
 
     def successors(self):
@@ -267,22 +234,18 @@ class CBS():
             return None
 
         Open = list()
-        # heapq.heappush(Open, start)
-        Open.append(start)
-
+        heapq.heappush(Open, start)
         while len(Open) != 0:
-            # n = heapq.heappop(Open)
-            n = Open.pop()
 
+            n = heapq.heappop(Open)
             if n.is_solution()[0]:
                 return n._paths, n._cost
 
             for children in n.successors():
                 children.compute_cost()
                 if children._cost != float('inf'):
-                    # heapq.heappush(Open, children)
-                    Open.append(children)
-
+                    heapq.heappush(Open, children)
+                    heapq.heapify(Open)
 
 class AStar():
 
