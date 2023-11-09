@@ -170,7 +170,7 @@ class CBSState:
         #
         # return True, None
 
-        pathArr = list(self._paths.values())
+        # pathArr = list(self._paths.values())
         sorted_dict = dict(sorted(self._paths.items(), reverse=True, key=lambda item: len(item[1])))
         first_key, first_value = next(iter(sorted_dict.items()))
 
@@ -190,15 +190,24 @@ class CBSState:
         while index < len(first_value):
             nth_elementHash = dict()
 
-            for i in range(len(pathArr)):
-                sublist = pathArr[i]
+            for agentId in self._paths:
+                agentPathArr = self._paths[agentId]
 
-                if len(sublist) - 1 >= index:
-                    if sublist[index] in nth_elementHash:
-                        conflict_time, conflict_state, agent1, agent2 = index, sublist[index], i, nth_elementHash[sublist[index]]
+                if len(agentPathArr) > index:
+                    agentState = agentPathArr[index]
+
+                    if agentState in nth_elementHash:
+                        conflict_time, conflict_state, agent1, agent2 = index, agentState, agentId, nth_elementHash[agentState]
                         return False, conflict_state, conflict_time, agent1, agent2
 
-                    nth_elementHash[sublist[index]] = i
+                    # if agentId in self._constraints:
+                    #     if (agentState.get_x(), agentState.get_y())  in self._constraints[agentId]:
+                    #         if index - 1 in self._constraints[agentId][(agentState.get_x(), agentState.get_y())]:
+                    #         # return False, agentState, index, None, None
+                    #         # continue
+                    #             print(False)
+
+                    nth_elementHash[agentPathArr[index]] = agentId
 
             index += 1
         return conflict, conflict_state, conflict_time, agent1, agent2
@@ -258,19 +267,20 @@ class CBS():
             return None
 
         Open = list()
-        # Open.append(start)
-        heapq.heappush(Open, start)
+        # heapq.heappush(Open, start)
+        Open.append(start)
 
         while len(Open) != 0:
-            n = heapq.heappop(Open)
+            # n = heapq.heappop(Open)
+            n = Open.pop()
 
-            is_solution = n.is_solution()[0]
-            if is_solution:
+            if n.is_solution()[0]:
                 return n._paths, n._cost
 
             for children in n.successors():
                 children.compute_cost()
                 if children._cost != float('inf'):
+                    # heapq.heappush(Open, children)
                     Open.append(children)
 
 
